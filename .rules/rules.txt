@@ -1,0 +1,143 @@
+**BoxBoxBox AI Instructions – rules.txt**
+
+This file contains everything an AI agent needs to know to build the full BoxBoxBox project from scratch.
+
+---
+
+## 🔧 Project Purpose
+
+Build a full-stack web application for Formula 1 fans that combines:
+
+* Real-time race data visualizations
+* Technical glossary with 3D models
+* RAG-based Q\&A for F1 rules and parts
+* Machine learning predictions (e.g., pit stops)
+* Fan interaction features (live polls, predictions)
+
+---
+
+## 🧱 High-Level Architecture
+
+**Frontend** (React + Tailwind + Three.js):
+
+* Interactive, responsive UI
+* Pages:
+
+  * `/dashboard` — race telemetry and lap data
+  * `/glossary` — F1 terms + 3D visualizer
+  * `/ask` — chat-like RAG bot interface
+  * `/predictor` — pit stop model interaction
+  * `/simulator` — race strategy simulator
+
+**Backend** (FastAPI):
+
+* Routes:
+
+  * `/telemetry` — Fetch data from FastF1
+  * `/race` — Results and schedules (via Jolpica)
+  * `/rag/ask` — User queries with RAG answers
+  * `/predict` — ML pit stop prediction
+  * `/simulate` — Run strategy simulation
+
+**Machine Learning**:
+
+* `pit_stop_predictor.ipynb`: Train and use ML model
+* `strategy_simulator.py`: Strategy outcome simulator
+
+**RAG Pipeline**:
+
+* `index_documents.py` — Chunk glossary docs, embed using OpenAI
+* `query_pipeline.py` — Fetch top chunks + LLM response
+* Vector store: `FAISS` (stored as `vector_store.faiss`)
+
+**3D Models**:
+
+* Folder: `frontend/assets/3d-models/`
+* Render using Three.js, attach descriptions with hover/tap interactions
+
+---
+
+## 🧠 AI Tasks & Flow
+
+### 1. 🧱 Setup and Environment
+
+* Setup Python backend with `FastAPI`
+* Setup React frontend with TailwindCSS
+* Setup RAG dependencies: `langchain`, `faiss`, `openai`
+* Prepare `.env` for API keys
+
+### 2. ⚙️ API Integration
+
+* Use **FastF1** for live telemetry, laps, and timing
+* Use **Jolpica** for standings, schedules
+* Use **OpenAI API** or **Llama 3/Ollama** for RAG answers
+
+### 3. 🧠 Build RAG Pipeline
+
+* Chunk glossary markdowns (300 tokens)
+* Embed with `OpenAIEmbeddings`
+* Save in FAISS
+* On query: retrieve top-k → pass to LLM → return concise answer
+
+### 4. 🤖 Train Pit Stop Predictor
+
+* Features: tyre compound, track temp, team, driver, weather
+* Model: XGBoost or Random Forest
+* Train, export, and serve via FastAPI `/predict`
+
+### 5. 📊 Strategy Simulator
+
+* Inputs: tyre strategy, safety car window, pit window
+* Output: estimated position/pace
+* Can use basic simulation (or optional reinforcement learning)
+
+### 6. 📈 Frontend Layout
+
+* Use router to navigate pages
+* Use D3.js for live data viz
+* Use socket.io or polling to show near real-time data
+* Show 3D part render in glossary using Three.js
+* Chat UI for `/ask` using OpenAI RAG
+
+---
+
+## 📁 Directory References
+
+* `frontend/` — React app
+* `backend/` — FastAPI core
+* `ml-models/` — predictors and simulators
+* `rag-pipeline/` — chunk/index/query logic
+* `data/` — all static race data (CSV, JSON)
+
+---
+
+## 🧩 APIs & Keys
+
+* **FastF1** — no key needed
+* **Jolpica** — insert key in `.env`
+* **OpenAI API** — for RAG, place in `.env`
+
+---
+
+## 📝 Output Expectations
+
+* Interactive web interface with 6 modules
+* RAG-based glossary answering system
+* Pit stop predictions via ML
+* Dashboard with telemetry
+* Strategy simulator results view
+* Fully responsive UI + clean code
+
+---
+
+## 📌 End Goal
+
+A seamless F1 hub for fans and engineers alike — merging data science, real-time telemetry, AI, and motorsports culture.
+
+---
+
+## 🔗 Author
+
+Mantej Singh Arora (Drago-03)
+Founder @ Indie Hub
+GitHub: [https://github.com/Drago-03](https://github.com/Drago-03)
