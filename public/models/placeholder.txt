@@ -1,0 +1,9 @@
+Place 3D model files here:
+
+1. senna_helmet.glb - Ayrton Senna's iconic yellow and green helmet model
+2. f1_car.glb - Stylized F1 car model for the logo
+
+Download or create 3D models from:
+- Sketchfab
+- TurboSquid
+- CGTrader 

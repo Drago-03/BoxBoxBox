@@ -14,7 +14,7 @@ import {
   Clock,
   Target
 } from 'lucide-react';
-import { useSpeechSynthesis, useSpeechRecognition } from 'react-speech-kit';
+import useSound from 'use-sound';
 
 interface RaceEngineerProps {
   isRaceActive: boolean;
@@ -45,16 +45,53 @@ export const AIRaceEngineer: React.FC<RaceEngineerProps> = ({
   const [messages, setMessages] = useState<EngineerMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [engineerMode, setEngineerMode] = useState<'strategic' | 'technical' | 'performance'>('strategic');
+  const [transcript, setTranscript] = useState('');
+  
+  // Speech synthesis setup
+  const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
+  const recognitionRef = useRef<any>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  
+  // Sound effects
+  const [playActivate] = useSound('/sounds/button-click.mp3', { volume: 0.5 });
+  const [playMessage] = useSound('/sounds/start-signal.mp3', { volume: 0.3 });
 
-  const { speak, cancel, speaking, supported: speechSupported } = useSpeechSynthesis();
-  const { listen, listening, stop } = useSpeechRecognition({
-    onResult: (result: string) => {
-      handleVoiceCommand(result);
-    },
-    onError: (error: any) => {
-      console.error('Speech recognition error:', error);
+  // Initialize Web Speech API
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      speechSynthesisRef.current = window.speechSynthesis;
+      
+      // Initialize speech recognition if supported
+      if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = false;
+        
+        recognitionRef.current.onresult = (event: any) => {
+          const result = event.results[event.results.length - 1];
+          const transcript = result[0].transcript;
+          setTranscript(transcript);
+          handleVoiceCommand(transcript);
+        };
+        
+        recognitionRef.current.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+        };
+      }
     }
-  });
+    
+    // Cleanup
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+      if (speechSynthesisRef.current) {
+        speechSynthesisRef.current.cancel();
+      }
+    };
+  }, []);
 
   // Simulate real-time race engineer insights
   useEffect(() => {
@@ -95,6 +132,24 @@ export const AIRaceEngineer: React.FC<RaceEngineerProps> = ({
     addMessage(randomInsight);
   };
 
+  const speakText = (text: string) => {
+    if (speechSynthesisRef.current && isAudioEnabled) {
+      // Cancel any ongoing speech
+      speechSynthesisRef.current.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.1;
+      utterance.pitch = 0.9;
+      
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      
+      speechSynthesisRef.current.speak(utterance);
+      playMessage();
+    }
+  };
+
   const addMessage = (message: Omit<EngineerMessage, 'id' | 'timestamp' | 'audioEnabled'>) => {
     const newMessage: EngineerMessage = {
       ...message,
@@ -106,8 +161,8 @@ export const AIRaceEngineer: React.FC<RaceEngineerProps> = ({
     setMessages(prev => [newMessage, ...prev.slice(0, 9)]); // Keep last 10 messages
 
     // Speak high priority messages
-    if (newMessage.audioEnabled && speechSupported && !speaking) {
-      speak({ text: newMessage.content, rate: 1.1, pitch: 0.9 });
+    if (newMessage.audioEnabled && !isSpeaking) {
+      speakText(newMessage.content);
     }
   };
 
@@ -156,12 +211,19 @@ export const AIRaceEngineer: React.FC<RaceEngineerProps> = ({
   };
 
   const toggleListening = () => {
-    if (listening) {
-      stop();
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
       setIsListening(false);
     } else {
-      listen({ continuous: true, interimResults: false });
-      setIsListening(true);
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+        playActivate();
+      } else {
+        console.error('Speech recognition not supported in this browser');
+      }
     }
   };
 
@@ -207,6 +269,7 @@ export const AIRaceEngineer: React.FC<RaceEngineerProps> = ({
             value={engineerMode}
             onChange={(e) => setEngineerMode(e.target.value as any)}
             className="px-3 py-1 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white text-sm"
+            aria-label="Engineer Mode"
           >
             <option value="strategic">Strategic</option>
             <option value="technical">Technical</option>
@@ -250,101 +313,72 @@ export const AIRaceEngineer: React.FC<RaceEngineerProps> = ({
             )}
           </motion.button>
 
-          <div className="text-center">
-            <div className="text-sm font-medium text-white">
-              {isProcessing ? 'Processing...' : isListening ? 'Listening...' : 'Press to talk'}
-            </div>
-            <div className="text-xs text-gray-400 mt-1">
-              Ask about strategy, tires, fuel, weather
-            </div>
+          <div className="text-sm text-white bg-gray-700/50 rounded-lg px-3 py-2 max-w-xs">
+            {isProcessing ? (
+              <div className="flex items-center space-x-2">
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                >
+                  <Zap className="w-4 h-4 text-blue-400" />
+                </motion.div>
+                <span className="text-gray-300">Processing...</span>
+              </div>
+            ) : isListening ? (
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-green-400" />
+                <span className="text-gray-300">Listening... {transcript && `"${transcript}"`}</span>
+              </div>
+            ) : (
+              <span className="text-gray-300">Press mic to speak with your race engineer</span>
+            )}
           </div>
         </div>
-
-        {isProcessing && (
-          <div className="mt-4 flex items-center justify-center space-x-2 text-blue-400">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
-            <span className="text-sm ml-2">Analyzing race data...</span>
-          </div>
-        )}
       </div>
 
-      {/* Messages Feed */}
-      <div className="space-y-3 max-h-80 overflow-y-auto">
+      {/* Messages */}
+      <div className="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
         <AnimatePresence>
           {messages.map((message) => {
-            const IconComponent = getTypeIcon(message.type);
+            const Icon = getTypeIcon(message.type);
+            
             return (
               <motion.div
                 key={message.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className={`p-4 rounded-lg border ${getPriorityColor(message.priority)} bg-gray-700/20`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ type: 'spring', damping: 20 }}
+                className={`flex space-x-3 p-3 border rounded-lg ${getPriorityColor(message.priority)} bg-gray-800/40`}
               >
-                <div className="flex items-start space-x-3">
-                  <IconComponent className="w-4 h-4 mt-1 flex-shrink-0" />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-medium uppercase tracking-wide">
-                        {message.type}
-                      </span>
-                      <div className="flex items-center space-x-2 text-xs text-gray-400">
-                        <Clock className="w-3 h-3" />
-                        <span>{message.timestamp.toLocaleTimeString()}</span>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-200 leading-relaxed">
-                      {message.content}
-                    </p>
+                <div className={`mt-1 ${message.type === 'warning' ? 'text-yellow-400' : message.type === 'strategy' ? 'text-blue-400' : 'text-gray-400'}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-gray-400 uppercase">
+                      {message.type}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </span>
                   </div>
+                  
+                  <p className="text-sm text-white mt-1">{message.content}</p>
                 </div>
               </motion.div>
             );
           })}
         </AnimatePresence>
-
+        
         {messages.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
-            <Radio className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p className="text-sm">
-              {isRaceActive 
-                ? 'Race engineer ready. Voice commands active.' 
-                : 'Race engineer on standby. Activate during race session.'}
-            </p>
+          <div className="text-center py-6 text-gray-500">
+            <Radio className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p>No messages yet</p>
+            <p className="text-xs mt-1">Race engineer will provide updates during the race</p>
           </div>
         )}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mt-6 pt-4 border-t border-gray-700/50">
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={() => handleVoiceCommand('What is my current tire status?')}
-            className="px-3 py-2 bg-gray-700/30 hover:bg-gray-700/50 text-gray-300 rounded-lg text-sm transition-colors"
-          >
-            Tire Status
-          </button>
-          <button
-            onClick={() => handleVoiceCommand('Should I pit now?')}
-            className="px-3 py-2 bg-gray-700/30 hover:bg-gray-700/50 text-gray-300 rounded-lg text-sm transition-colors"
-          >
-            Pit Strategy
-          </button>
-          <button
-            onClick={() => handleVoiceCommand('What is the weather forecast?')}
-            className="px-3 py-2 bg-gray-700/30 hover:bg-gray-700/50 text-gray-300 rounded-lg text-sm transition-colors"
-          >
-            Weather Update
-          </button>
-          <button
-            onClick={() => handleVoiceCommand('Show me my position and gaps')}
-            className="px-3 py-2 bg-gray-700/30 hover:bg-gray-700/50 text-gray-300 rounded-lg text-sm transition-colors"
-          >
-            Position Update
-          </button>
-        </div>
       </div>
     </div>
   );

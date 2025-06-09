@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: boxboxbox-config
+data:
+  api_base_url: "https://boxboxbox.example.com/api"
+  ws_url: "wss://boxboxbox.example.com/ws"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: boxboxbox-secrets
+type: Opaque
+stringData:
+  database_url: "postgresql://postgres:${POSTGRES_PASSWORD}@boxboxbox-postgres:5432/boxboxbox"
+  redis_url: "redis://boxboxbox-redis:6379/0"
+  secret_key: "${SECRET_KEY}"
+  postgres_user: "postgres"
+  postgres_password: "${POSTGRES_PASSWORD}"
+  openai_api_key: "${OPENAI_API_KEY}"
+  jolpica_api_key: "${JOLPICA_API_KEY}" 

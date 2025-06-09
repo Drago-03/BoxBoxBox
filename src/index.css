@@ -1,3 +1,174 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Global styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Basic button styles */
+button:focus {
+  outline: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FF0000;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF4500;
+}
+
+/* Loading screen styles */
+.loading-progress {
+  transition: width 0.3s ease-out;
+}
+
+/* Optimized layout */
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Racing button styles */
+.start-button::before,
+.start-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  transition: all 0.3s;
+}
+
+.start-button::before {
+  background: linear-gradient(to right, #FF0000, #FF4500);
+  transform: translateZ(-0.5px);
+}
+
+.start-button::after {
+  background: #990000;
+  transform: translateZ(-1px) translateY(4px);
+}
+
+.start-button.clicked::after {
+  transform: translateZ(-1px) translateY(0);
+}
+
+/* Ripple effect for buttons */
+.racing-button-ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Cursor trail */
+.cursor-trail-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* F1 loading animation effects */
+.f1-logo-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+.header-logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+/* Speed lines effect */
+.speed-lines {
+  overflow: hidden;
+}
+
+.speed-line {
+  position: absolute;
+  height: 1px;
+  background-color: rgba(255, 0, 0, 0.3);
+  transform: translateX(-100%);
+  animation: speed-line 1s linear infinite;
+}
+
+@keyframes speed-line {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Parallax effects */
+.parallax-container {
+  perspective: 1000px;
+}
+
+.parallax-item {
+  transition: transform 0.2s;
+  transform-style: preserve-3d;
+}
+
+/* Helmet container */
+.helmet-container {
+  position: relative;
+}
+
+/* Progress bar */
+.racing-progress-container {
+  position: relative;
+}
+
+/* Particle effects */
+.particle {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  transform: translateZ(0);
+}
+
+/* 3D transforms */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective {
+  perspective: 1000px;
+}

@@ -8,23 +8,37 @@ import { PitStopPredictor } from './pages/PitStopPredictor';
 import { StrategySimulator } from './pages/StrategySimulator';
 import { Home } from './pages/Home';
 
+// Import providers and loading screen
+import { LoadingProvider } from './context/LoadingContext';
+import { TelemetryProvider } from './context/TelemetryContext';
+import LoadingScreen from './components/LoadingScreen';
+
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <Navigation />
-        <main className="pt-16">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/glossary" element={<Glossary />} />
-            <Route path="/assistant" element={<AIAssistant />} />
-            <Route path="/predictor" element={<PitStopPredictor />} />
-            <Route path="/simulator" element={<StrategySimulator />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <LoadingProvider>
+      <TelemetryProvider>
+        <Router>
+          <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+            {/* Loading Screen */}
+            <LoadingScreen />
+            
+            {/* Main content */}
+            <Navigation />
+            
+            <div className="pt-16 container mx-auto px-4">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/glossary" element={<Glossary />} />
+                <Route path="/assistant" element={<AIAssistant />} />
+                <Route path="/predictor" element={<PitStopPredictor />} />
+                <Route path="/simulator" element={<StrategySimulator />} />
+              </Routes>
+            </div>
+          </div>
+        </Router>
+      </TelemetryProvider>
+    </LoadingProvider>
   );
 }
 

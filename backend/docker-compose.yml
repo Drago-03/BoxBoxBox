@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/boxboxbox
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-a9fb973d41e749faaa9dca671a2c8ec7f25325fd2a1b1acd99bc91eb}
+      - DEBUG_MODE=true
+      - CORS_ORIGINS=["http://localhost:5173", "http://localhost:3000"]
+    depends_on:
+      - db
+      - redis
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - boxboxbox-network
+
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=boxboxbox
+    ports:
+      - "5432:5432"
+    networks:
+      - boxboxbox-network
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - boxboxbox-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@boxboxbox.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - boxboxbox-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  boxboxbox-network:
+    driver: bridge 

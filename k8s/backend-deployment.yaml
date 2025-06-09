@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: boxboxbox-backend
+  labels:
+    app: boxboxbox
+    tier: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: boxboxbox
+      tier: backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: boxboxbox
+        tier: backend
+    spec:
+      containers:
+      - name: backend
+        image: ${DOCKER_REGISTRY}/boxboxbox-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: boxboxbox-secrets
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: boxboxbox-secrets
+              key: redis_url
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: boxboxbox-secrets
+              key: secret_key
+        - name: DEBUG_MODE
+          value: "false"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "8000"
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: boxboxbox-secrets
+              key: openai_api_key
+        - name: JOLPICA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: boxboxbox-secrets
+              key: jolpica_api_key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: boxboxbox-backend
+  labels:
+    app: boxboxbox
+    tier: backend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: boxboxbox
+    tier: backend 

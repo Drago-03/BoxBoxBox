@@ -1,0 +1,10 @@
+Place audio files here:
+
+1. f1-engine.mp3 - F1 engine revving sound effect
+2. start-signal.mp3 - Race start signal sound effect
+3. button-click.mp3 - Button click sound effect for UI interactions
+
+Download royalty-free F1 sound effects from:
+- Freesound.org
+- Zapsplat
+- Mixkit 

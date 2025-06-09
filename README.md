@@ -1,8 +1,31 @@
-# BoxBoxBox F1 Platform 🏁
+# BoxBoxBox F1 Platform 🏎️🏁
 
-A comprehensive AI-enhanced Formula 1 platform combining real-time telemetry, machine learning predictions, 3D visualizations, and an intelligent race engineer assistant.
+<div align="center">
+  <img src="assets/images/senna_helmet.png" alt="Ayrton Senna's Helmet" width="150" />
+  <h3>"If you no longer go for a gap that exists, you're no longer a racing driver."</h3>
+  <p><i>- Ayrton Senna</i></p>
+  <br/>
+  <p>A comprehensive AI-enhanced Formula 1 platform combining real-time telemetry, machine learning predictions, 3D visualizations, and an intelligent race engineer assistant.</p>
+</div>
 
-## 🚀 Features
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#deployment">Deployment</a> •
+  <a href="#ui-components">UI Components</a> •
+  <a href="#animations">Animations</a> •
+  <a href="#contributing">Contributing</a>
+</p>
+
+<div align="center">
+  <img src="https://img.shields.io/badge/React-18.3.0-61DAFB?style=for-the-badge&logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5.5.3-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python" alt="Python" />
+  <img src="https://img.shields.io/badge/FastAPI-0.103.0-009688?style=for-the-badge&logo=fastapi" alt="FastAPI" />
+</div>
+
+## ✨ Features
 
 ### Core Platform
 - **Live Dashboard**: Real-time telemetry, lap times, and race analytics powered by FastF1
@@ -23,7 +46,7 @@ A comprehensive AI-enhanced Formula 1 platform combining real-time telemetry, ma
 - **Predictive Insights**: Tire degradation, fuel consumption, and strategy optimization
 - **Visual Data Representation**: Interactive charts with D3.js and Chart.js
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
 - **React 18+** with TypeScript
@@ -33,60 +56,65 @@ A comprehensive AI-enhanced Formula 1 platform combining real-time telemetry, ma
 - **Chart.js & D3.js** for data visualization
 - **Web Speech API** for voice interaction
 
-### Backend (Planned)
-- **FastAPI** with Python 3.9+
-- **PostgreSQL** for data storage
-- **Redis** for real-time data caching
-- **FAISS/Pinecone** for vector storage
-- **OpenAI Whisper** for voice processing
-- **GPT-4** for natural language understanding
+### Backend (Python-Only Implementation)
+- **Python 3.9+** - STRICT REQUIREMENT: All backend logic MUST be implemented in Python
+- **FastAPI** for RESTful API endpoints and WebSocket connections
+- **PostgreSQL** with SQLAlchemy ORM for data persistence
+- **Redis** for real-time data caching and pub/sub messaging
+- **Pandas & NumPy** for data processing and analysis
+- **scikit-learn & PyTorch** for machine learning models
+- **FAISS/Pinecone** for vector storage and similarity search
+- **Pydantic** for data validation and settings management
+- **Celery** for background task processing
+- **pytest** for comprehensive test coverage
 
 ### APIs & Data Sources
-- **FastF1** - Telemetry and lap data
+- **FastF1** Python package - Telemetry and lap data
 - **Jolpica F1 API** - Race schedules and results
-- **OpenAI API** - AI assistant capabilities
+- **OpenAI API** with Python client - AI assistant capabilities
 
-## 🏗 Architecture
+## 🏗️ Architecture
 
 ```
 boxboxbox/
-├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── AIRaceEngineer.tsx
-│   │   ├── RealTimeAnalytics.tsx
-│   │   ├── CarVisualization.tsx
-│   │   └── ...
-│   ├── pages/              # Main application pages
-│   │   ├── Dashboard.tsx
-│   │   ├── Glossary.tsx
-│   │   ├── AIAssistant.tsx
-│   │   └── ...
-│   ├── hooks/              # Custom React hooks
-│   │   ├── useRealTimeData.ts
-│   │   └── useTelemetryData.ts
-│   ├── utils/              # Utility functions
-│   │   └── api.ts
-│   └── types/              # TypeScript definitions
-├── backend/                # FastAPI backend (planned)
-│   ├── main.py
-│   ├── routers/
-│   ├── ml_models/
-│   └── rag_pipeline/
-└── docs/                   # Documentation
+├── frontend/                # React TypeScript frontend
+│   ├── src/
+│   │   ├── components/      # Reusable UI components
+│   │   ├── pages/           # Main application pages
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── utils/           # Utility functions
+│   │   └── types/           # TypeScript definitions
+├── backend/                 # Python-only backend implementation
+│   ├── app/
+│   │   ├── main.py          # FastAPI entry point
+│   │   ├── api/             # API endpoints and routers
+│   │   ├── core/            # Core application logic
+│   │   ├── db/              # Database models and schemas
+│   │   ├── services/        # Business logic services
+│   │   ├── ml_models/       # Machine learning models
+│   │   ├── rag_pipeline/    # Retrieval-augmented generation
+│   │   └── utils/           # Utility functions
+│   ├── tests/               # Python unit and integration tests
+│   ├── pyproject.toml       # Python dependencies and config
+│   └── Dockerfile           # Backend container definition
+└── docs/                    # Documentation
 ```
 
-## 🚦 Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- npm or yarn
+- Node.js 18+ (Frontend)
+- Python 3.9+ (Backend - STRICT REQUIREMENT)
+- PostgreSQL 14+
+- Redis 6+
 
 ### Installation
 
+#### Frontend
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/boxboxbox-f1-platform.git
-cd boxboxbox-f1-platform
+cd boxboxbox-f1-platform/frontend
 ```
 
 2. Install dependencies:
@@ -101,65 +129,159 @@ npm run dev
 
 4. Open your browser and navigate to `http://localhost:5173`
 
-### Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-VITE_API_BASE_URL=http://localhost:8000
-VITE_WS_URL=ws://localhost:8000/ws
-VITE_OPENAI_API_KEY=your_openai_api_key
-VITE_JOLPICA_API_KEY=your_jolpica_api_key
-```
-
-## 🎯 Usage
-
-### AI Race Engineer
-1. Navigate to the Dashboard and select the "AI Engineer" tab
-2. Click the microphone button to start voice interaction
-3. Ask questions like:
-   - "Should I pit now?"
-   - "What's my tire status?"
-   - "Show me the weather forecast"
-   - "What's my current position?"
-
-### Real-time Analytics
-1. Go to Dashboard → Analytics tab
-2. View live telemetry data including speed, throttle, brake inputs
-3. Monitor performance metrics and system status
-4. Analyze ERS deployment and tire temperature data
-
-### Strategy Simulation
-1. Visit the Strategy Simulator page
-2. Configure starting position, tire strategy, and pit stops
-3. Set race parameters like aggressiveness and weather
-4. Run simulation to see predicted outcomes
-
-## 🧪 Testing
-
-Run the test suite:
+#### Backend (Python Only)
+1. Navigate to the backend directory:
 ```bash
-npm run test
+cd boxboxbox-f1-platform/backend
 ```
 
-Run tests with coverage:
+2. Create and activate a virtual environment:
 ```bash
-npm run test:coverage
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-## 📊 Performance
+3. Install Python dependencies:
+```bash
+pip install -e .
+```
 
-- **Real-time Updates**: 100ms response time for voice commands
-- **Data Streaming**: 10Hz telemetry data updates
-- **Voice Recognition**: >95% accuracy in quiet environments
-- **Cross-browser Support**: Chrome, Firefox, Safari, Edge
+4. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
 
-## 🔒 Security
+5. Run database migrations:
+```bash
+alembic upgrade head
+```
 
-- API key management through environment variables
-- CORS configuration for secure cross-origin requests
-- Input validation for all user interactions
-- Rate limiting for API endpoints
+6. Start the Python backend server:
+```bash
+uvicorn app.main:app --reload
+```
+
+## 🚢 Deployment
+
+### Docker Deployment
+
+We use Docker for containerized deployment. The project includes Docker configurations for both frontend and backend.
+
+#### Building and Running Docker Containers
+
+1. Build and run the backend container:
+```bash
+cd backend
+docker build -t boxboxbox-backend .
+docker run -p 8000:8000 --env-file .env boxboxbox-backend
+```
+
+2. Build and run the frontend container:
+```bash
+cd frontend
+docker build -t boxboxbox-frontend .
+docker run -p 80:80 boxboxbox-frontend
+```
+
+3. Or use Docker Compose for the entire stack:
+```bash
+docker-compose up -d
+```
+
+### Cloud Deployment Options
+
+The application is designed to be deployed on various cloud platforms:
+
+#### AWS Deployment
+- Backend: AWS ECS with Fargate
+- Frontend: AWS Amplify or S3 + CloudFront
+- Database: RDS PostgreSQL
+- Cache: ElastiCache Redis
+- CI/CD: AWS CodePipeline
+
+#### Azure Deployment
+- Backend: Azure Container Apps
+- Frontend: Azure Static Web Apps
+- Database: Azure Database for PostgreSQL
+- Cache: Azure Cache for Redis
+- CI/CD: Azure DevOps Pipelines
+
+#### Self-Hosted Kubernetes
+- Use the provided Kubernetes manifests in `k8s/` directory
+- Deploy with `kubectl apply -f k8s/`
+
+## 🎮 UI Components
+
+### Interactive Buttons
+
+The application features multiple custom button styles:
+
+#### Racing Button
+- 3D effect with depth perception
+- Animated hover and click states
+- Team color variants (red, blue, green, yellow)
+- Sound effects on interaction
+- Ripple animation on click
+
+```jsx
+<RacingButton color="red" onClick={handleAction}>
+  Start Race
+</RacingButton>
+```
+
+#### Toggle Switches
+- Animated state transitions
+- DRS-style activation animation
+- Haptic feedback animation
+
+```jsx
+<DRSToggle isActive={isDrsEnabled} onChange={toggleDRS} />
+```
+
+### Loading Screen
+
+An immersive F1-themed loading experience:
+
+- Ayrton Senna tribute with rotating quotes
+- 3D helmet visualization with reflections
+- Racing-inspired progress bar with track sections
+- F1 starting lights sequence
+- Ambient sound effects
+
+### Telemetry Visualizations
+
+- Real-time updating charts with smooth animations
+- Interactive tooltips and zoom functionality
+- Team color-coded data lines
+- Responsive layout adapting to different screen sizes
+
+## ✨ Animations
+
+The BoxBoxBox platform features extensive animations to create an immersive F1 experience:
+
+### Page Transitions
+- Smooth page transitions with racing-inspired effects
+- Content reveal animations based on scroll position
+- Parallax effects for depth perception
+
+### Interactive Elements
+- Button hover and click animations
+- Form input focus states with animated highlights
+- Toggle switches with F1-inspired animations
+- Dropdown menus with acceleration/deceleration easing
+
+### Data Visualizations
+- Animated data updates with smooth transitions
+- Speed lines and motion blur effects
+- Particle effects for emphasis
+- Racing-inspired loading spinners
+
+### Performance Optimizations
+- Hardware-accelerated animations using CSS transforms
+- RAF-based animations for smooth performance
+- Reduced motion settings for accessibility
+- Optimized for 60fps on all devices
 
 ## 🤝 Contributing
 
@@ -168,6 +290,14 @@ npm run test:coverage
 3. Commit your changes: `git commit -m 'Add amazing feature'`
 4. Push to the branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow the established code style and patterns
+- Write tests for new features
+- Update documentation as needed
+- Ensure all animations are performant and accessible
+- Python backend code must follow PEP 8 guidelines
 
 ## 📝 License
 
@@ -184,8 +314,12 @@ Founder @ Indie Hub
 
 - FastF1 team for the excellent telemetry API
 - Formula 1 community for inspiration and feedback
+- Ayrton Senna's legacy for inspiration
 - Open source contributors and maintainers
 
 ---
 
-**BoxBoxBox** - Bringing AI-powered insights to Formula 1 racing 🏎️
+<div align="center">
+  <p>BoxBoxBox - Bringing AI-powered insights to Formula 1 racing 🏎️</p>
+  <img src="https://img.shields.io/badge/Built%20with-❤️-red?style=for-the-badge" alt="Built with love" />
+</div>

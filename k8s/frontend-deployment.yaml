@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: boxboxbox-frontend
+  labels:
+    app: boxboxbox
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: boxboxbox
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: boxboxbox
+        tier: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: ${DOCKER_REGISTRY}/boxboxbox-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+        - name: VITE_API_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: boxboxbox-config
+              key: api_base_url
+        - name: VITE_WS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: boxboxbox-config
+              key: ws_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: boxboxbox-frontend
+  labels:
+    app: boxboxbox
+    tier: frontend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: boxboxbox
+    tier: frontend 

@@ -6,6 +6,8 @@ import { LiveTiming } from '../components/LiveTiming';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { AIRaceEngineer } from '../components/AIRaceEngineer';
 import { RealTimeAnalytics } from '../components/RealTimeAnalytics';
+import { TelemetryProvider } from '../context/TelemetryContext';
+import TelemetryDisplay from '../components/TelemetryDisplay';
 
 export const Dashboard: React.FC = () => {
   const [selectedDriver, setSelectedDriver] = useState('VER');
@@ -173,6 +175,11 @@ export const Dashboard: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
+            <TelemetryProvider>
+              <TelemetryDisplay />
+            </TelemetryProvider>
+          </div>
           <RealTimeAnalytics selectedDriver={selectedDriver} isLive={isLive} />
         </motion.div>
       )}
