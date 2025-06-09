@@ -1,4 +1,4 @@
-# BoxBoxBox F1 Platform 🏎️🏁
+# BoxBoxBox F1 Platform
 
 <div align="center">
   <img src="assets/images/senna_helmet.png" alt="Ayrton Senna's Helmet" width="150" />
